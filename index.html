@@ -448,7 +448,7 @@
     const title=$('#intro-title');title.replaceChildren(document.createTextNode(p.name),make('span','accent','.'));
     $('.role').textContent=p.headline;$('.intro-copy').textContent=p.bio;
     $('.profile-card h3').textContent=p.focusTitle;$('.profile-card h3 + p').textContent=p.focusDescription;
-    const details=$('.profile-line strong');[p.currentRole,p.currentCompany,p.degree].forEach((value,i)=>{if(details[i])details[i].textContent=value;});
+    const details=$$('.profile-line strong');[p.currentRole,p.currentCompany,p.degree].forEach((value,i)=>{if(details[i])details[i].textContent=value;});
     const avatar=$('.profile-avatar'),photo=safeUrl(p.photoUrl),initials=p.name.split(/\s+/).filter(Boolean).slice(0,3).map(v=>v[0]).join('').toUpperCase();
     avatar.replaceChildren();avatar.setAttribute('aria-hidden','true');
     if(photo){const image=make('img');image.alt=p.photoAlt||p.name;image.referrerPolicy='no-referrer';image.addEventListener('error',()=>{avatar.textContent=initials;avatar.setAttribute('aria-hidden','true');},{once:true});avatar.removeAttribute('aria-hidden');avatar.append(image);image.src=photo;}else avatar.textContent=initials;
