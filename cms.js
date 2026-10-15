@@ -1,5 +1,6 @@
 import { firebaseConfig, OWNER_UID, storageEnabled } from './firebase-config.js';
 export { OWNER_UID, storageEnabled };
+export const CMS_BUILD = "portfolio-gallery-v3-20261015";
 export const defaultContent = {
   "profile": {
     "name": "Muhammad Ichsan Nurdin",

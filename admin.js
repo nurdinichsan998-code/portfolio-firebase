@@ -1,4 +1,12 @@
-import { OWNER_UID, storageEnabled, defaultContent, copy, configured, connect, storageClient, validateContent, safeUrl, normalizeCategory } from './cms.js';
+import { CMS_BUILD, OWNER_UID, storageEnabled, defaultContent, copy, configured, connect, storageClient, validateContent, safeUrl, normalizeCategory } from './cms.js?v=portfolio-gallery-v3-20261015';
+
+// A visible build check prevents silently mixing a new editor with an old CMS file.
+const EXPECTED_BUILD = 'portfolio-gallery-v3-20261015';
+if (CMS_BUILD !== EXPECTED_BUILD) throw new Error('Versi cms.js tidak cocok. Ganti admin.html, admin.js, cms.js, dan index.html sebagai satu paket V3.');
+document.documentElement.dataset.adminBootBuild = EXPECTED_BUILD;
+const bootLabel = document.getElementById('build-status');
+if (bootLabel) { bootLabel.className='notice status success'; bootLabel.textContent = 'GALERI DINAMIS V3 — kode editor baru berhasil dimuat. Login untuk mengelola proyek.'; }
+
 const $=(s,root=document)=>root.querySelector(s);
 const $$=(s,root=document)=>Array.from(root.querySelectorAll(s));
 const create=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
@@ -200,7 +208,7 @@ async function loadFromServer(){
     revision=snapshot.exists()?snapshot.data().revision:0;
     populate(c);ready=true;dirty=false;$('#save-state').textContent=revision?'Versi terbit '+revision+'. Belum ada perubahan.':'Konten awal dimuat. Belum diterbitkan ke Firebase.';
     status(revision?'Konten terbaru dimuat dari server.':'Database masih kosong. Periksa data awal, lalu terbitkan untuk mengaktifkan konten online.');
-  }catch(error){if(token!==session)return;status('Gagal memuat konten. Periksa koneksi, database, UID admin, dan Firestore Rules. '+(error.message||''),'error');}
+  }catch(error){if(token!==session)return;status('Editor belum diaktifkan karena konten gagal dimuat. '+(error.code==='permission-denied'?'Akses Firestore ditolak. Periksa UID pemilik dan Firestore Rules. ':error.code==='unavailable'?'Server Firestore belum terjangkau. Periksa koneksi. ':'Periksa format konten dan konfigurasi Firebase. ')+(error.message||'')+' Kode: '+(error.code||'validasi konten'),'error');}
   finally{if(token===session)setBusy(false);}
 }
 $('#reload-content').addEventListener('click',()=>{if(dirty&&!confirm('Buang perubahan yang belum diterbitkan dan muat ulang dari server?'))return;loadFromServer();});
@@ -257,7 +265,20 @@ $('#login-form').addEventListener('submit',async event=>{
   event.preventDefault();if(!backend)return;
   $('#login-submit').disabled=true;status('Memeriksa akun…');
   try{await backend.authSDK.signInWithEmailAndPassword(backend.auth,$('#login-email').value.trim(),$('#login-password').value);$('#login-password').value='';}
-  catch{status('Login gagal. Periksa email, kata sandi, koneksi, dan pengaturan Authentication.','error');}
+  catch(error){
+    const messages={
+      'auth/invalid-credential':'Email atau kata sandi tidak cocok.',
+      'auth/user-not-found':'Akun admin belum tersedia atau kredensial tidak cocok.',
+      'auth/wrong-password':'Email atau kata sandi tidak cocok.',
+      'auth/invalid-email':'Format email tidak valid.',
+      'auth/too-many-requests':'Terlalu banyak percobaan. Tunggu sebelum mencoba lagi.',
+      'auth/network-request-failed':'Koneksi ke Firebase Authentication terputus.',
+      'auth/operation-not-allowed':'Aktifkan metode Email/Password di Firebase Authentication.',
+      'auth/unauthorized-domain':'Domain website belum diizinkan pada konfigurasi Firebase Authentication.',
+      'auth/invalid-api-key':'API key pada firebase-config.js tidak valid.'
+    };
+    status('Login gagal. '+(messages[error.code]||'Periksa konfigurasi Firebase dan koneksi.')+' Kode: '+(error.code||'tidak tersedia'),'error');
+  }
   finally{$('#login-submit').disabled=false;}
 });
 $('#reset-password').addEventListener('click',async()=>{

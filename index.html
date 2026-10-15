@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
+  <meta name="portfolio-build" content="portfolio-gallery-v3-20261015">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
@@ -114,7 +115,7 @@
     <div class="sidebar-bottom"><div class="sidebar-note"><svg class="icon accent" aria-hidden="true"><use href="#i-flow"/></svg><p>Operasional yang lebih terarah.<br>Teknologi yang lebih berdampak.</p><a href="#kontak" class="project-link">Mari terhubung<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div><div class="sidebar-foot"><span><span class="status-dot"></span>Operations × Technology</span><span>2026</span></div></div>
   </aside>
   <div class="main"><div class="content">
-    <header class="topbar"><button class="mobile-toggle" type="button" id="menu-toggle" aria-label="Buka navigasi" aria-controls="sidebar" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-bars"/></svg></button><div class="breadcrumb"><span>Portofolio</span><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-chevron"/></svg><span style="color:var(--text)">Muhammad Ichsan Nurdin</span></div><span class="edition">PERSONAL / 2026</span></header>
+    <header class="topbar"><button class="mobile-toggle" type="button" id="menu-toggle" aria-label="Buka navigasi" aria-controls="sidebar" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-bars"/></svg></button><div class="breadcrumb"><span>Portofolio</span><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-chevron"/></svg><span style="color:var(--text)">Muhammad Ichsan Nurdin</span></div><span class="edition">GALERI V3 / 2026</span></header>
     <p id="cms-status" class="section-note" role="status" style="padding-top:12px" hidden></p>
     <main id="main-content" tabindex="-1">
       <!-- 01. Introduction -->
@@ -135,7 +136,7 @@
         <li class="timeline-item reveal"><div class="timeline-date"><time datetime="2021-10">10/2021</time> – <time datetime="2021-11">11/2021</time></div><div class="timeline-content"><div class="timeline-title"><h3>Electrical Technician Intern</h3></div><p class="company">PT Dua Kelinci</p><ul><li>Melakukan inspeksi, perawatan, dan pemeliharaan sistem kelistrikan serta PLC mesin pabrik sesuai standar K3/HSE.</li></ul></div></li>
       </ol></section>
       <!-- 04. Selected projects. Previews below are illustrations, not actual site screenshots. -->
-      <section id="proyek" class="section" aria-labelledby="projects-title"><div class="section-heading"><div><p class="eyebrow">04 / Selected work</p><h2 id="projects-title">Ide yang menjadi solusi nyata.</h2></div><p class="section-note">Web, katalog digital, dan otomatisasi.</p></div>
+      <section id="proyek" class="section" aria-labelledby="projects-title"><div class="section-heading"><div><p class="eyebrow">04 / Selected work</p><h2 id="projects-title">Ide yang menjadi solusi nyata.</h2></div><p class="section-note">Galeri V3 · Web, desain, dan fotografi.</p></div>
         <div class="filters" id="project-filters" role="group" aria-label="Filter kategori proyek" hidden><button type="button" class="filter-btn" data-filter="all" aria-pressed="true" aria-controls="projects-grid">Semua proyek <span class="ml-1 opacity-70">04</span></button><button type="button" class="filter-btn" data-filter="web" aria-pressed="false" aria-controls="projects-grid">Web Development</button><button type="button" class="filter-btn" data-filter="automation" aria-pressed="false" aria-controls="projects-grid">AI & Automation</button></div>
         <div class="projects-grid" id="projects-grid">
           <article class="card project-card reveal" data-category="web" aria-labelledby="project-1-title">
@@ -327,8 +328,11 @@
   })();
   </script>
   <script type="module">
+(async () => {
+
   // Replaces the old public.js dependency. Keep firebase-config.js beside cms.js.
-  import { defaultContent, copy, configured, connect, validateContent, safeUrl, normalizeCategory, isGalleryCategory } from './cms.js';
+  const { CMS_BUILD, defaultContent, copy, configured, connect, validateContent, safeUrl, normalizeCategory, isGalleryCategory } = await import('./cms.js?v=portfolio-gallery-v3-20261015');
+  if(CMS_BUILD!=='portfolio-gallery-v3-20261015')throw new Error('Versi cms.js berbeda. Ganti seluruh berkas dari paket Galeri V3.');
   const $=(s,root=document)=>root.querySelector(s);
   const $=(s,root=document)=>Array.from(root.querySelectorAll(s));
   const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
@@ -475,6 +479,7 @@
   function report(message){cmsStatus.textContent=message;cmsStatus.hidden=!message;}
   // The static HTML above is the no-JavaScript fallback, not a project-count limit.
   renderContent(validateContent(copy(defaultContent)));
+  document.documentElement.dataset.portfolioBootBuild='portfolio-gallery-v3-20261015';
   if(!configured())report('Menampilkan konten awal. Konfigurasi Firebase belum lengkap.');
   else{
     try{
@@ -486,6 +491,22 @@
       },error=>{console.error('Portfolio subscription failed:',error);report('Konten online belum dapat dimuat. Versi terakhir tetap ditampilkan; periksa koneksi dan Firestore Rules.');});
     }catch(error){console.error('Portfolio connection failed:',error);report('Firebase belum terhubung. Konten awal tetap ditampilkan.');}
   }
-  </script>
+  
+})().catch(error => {
+  document.documentElement.dataset.portfolioBootBuild='failed';
+  const status=document.getElementById('cms-status');
+  status.hidden=false;
+  status.textContent='Galeri V3 belum aktif. Pastikan cms.js dan firebase-config.js tersedia di folder yang sama, tanpa akhiran .txt. Buka melalui HTTPS atau localhost. Detail: '+(error.message||'Gagal memuat modul.');
+  console.error('Portfolio gallery bootstrap:',error);
+});
+</script>
+<script>
+setTimeout(() => {
+  if(document.documentElement.dataset.portfolioBootBuild)return;
+  const status=document.getElementById('cms-status');
+  status.hidden=false;
+  status.textContent='Galeri V3 belum selesai dimuat. Periksa koneksi dan lokasi berkas cms.js serta firebase-config.js. Empat proyek yang terlihat saat ini adalah konten cadangan, bukan data terbaru dari Firebase.';
+},15000);
+</script>
 </body>
 </html>
