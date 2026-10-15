@@ -341,7 +341,7 @@
   const grid=$('#projects-grid'),filters=$('#project-filters'),cmsStatus=$('#cms-status');
   // Preserve the four original concept illustrations only as legacy fallbacks.
   const legacyPreviews=new Map();
-  $('.project-card',grid).forEach((card,i)=>{const preview=$('.preview',card);if(preview)legacyPreviews.set('legacy-project-'+(i+1),preview.cloneNode(true));});
+  $$('.project-card',grid).forEach((card,i)=>{const preview=$('.preview',card);if(preview)legacyPreviews.set('legacy-project-'+(i+1),preview.cloneNode(true));});
   let selectedCategory=null,projectData=[],lastPublishedContent=null;
   const lightbox=$('#gallery-lightbox'),stage=$('#lightbox-stage'),lightboxStatus=$('#lightbox-status');
   let activeGallery=null,activeIndex=0,returnFocus=null,oldOverflow='';
@@ -422,7 +422,7 @@
     body.append(bottom);article.append(body);return article;
   }
   function applyFilter(){
-    const cards=$('.project-card',grid);let count=0;
+    const cards=$$('.project-card',grid);let count=0;
     cards.forEach(card=>{const match=selectedCategory===null||card.dataset.category===selectedCategory;card.hidden=!match;if(match)count++;});
     let empty=$('.projects-empty',grid);
     if(!count){if(!empty){empty=make('p','projects-empty');grid.append(empty);}empty.textContent=projectData.length?'Tidak ada proyek dalam kategori ini.':'Belum ada proyek yang diterbitkan.';}
@@ -437,7 +437,7 @@
     if(selectedCategory!==null&&!categories.includes(selectedCategory))selectedCategory=null;
     filters.replaceChildren();
     function filterButton(label,category){const button=make('button','filter-btn',label);button.type='button';button.setAttribute('aria-controls','projects-grid');button.setAttribute('aria-pressed',String(selectedCategory===category));
-      button.addEventListener('click',()=>{selectedCategory=category;$('button',filters).forEach(item=>item.setAttribute('aria-pressed',String(item===button)));applyFilter();});filters.append(button);}
+      button.addEventListener('click',()=>{selectedCategory=category;$$('button',filters).forEach(item=>item.setAttribute('aria-pressed',String(item===button)));applyFilter();});filters.append(button);}
     filterButton('Semua proyek ('+projects.length+')',null);
     categories.forEach(category=>filterButton(category,category));filters.hidden=false;
     grid.replaceChildren(...projects.map(projectCard));applyFilter();
@@ -470,7 +470,7 @@
     }));
   }
   function renderSkills(skills){
-    $('.skill-card').forEach((card,i)=>{const skill=skills[i];if(!skill)return;$('h3',card).textContent=skill.title;$('p',card).textContent=skill.description;$('.tag-list',card).replaceChildren(...skill.tags.map(t=>make('span','tag',t)));});
+    $$('.skill-card').forEach((card,i)=>{const skill=skills[i];if(!skill)return;$('h3',card).textContent=skill.title;$('p',card).textContent=skill.description;$('.tag-list',card).replaceChildren(...skill.tags.map(t=>make('span','tag',t)));});
   }
   function renderContent(content){
     renderProfile(content.profile);renderExperience(content.experience);renderSkills(content.skills);renderProjects(content.projects);
