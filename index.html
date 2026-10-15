@@ -334,7 +334,7 @@
   const { CMS_BUILD, defaultContent, copy, configured, connect, validateContent, safeUrl, normalizeCategory, isGalleryCategory } = await import('./cms.js?v=portfolio-gallery-v3-20261015');
   if(CMS_BUILD!=='portfolio-gallery-v3-20261015')throw new Error('Versi cms.js berbeda. Ganti seluruh berkas dari paket Galeri V3.');
   const $=(s,root=document)=>root.querySelector(s);
-  const $=(s,root=document)=>Array.from(root.querySelectorAll(s));
+  const $$=(s,root=document)=>Array.from(root.querySelectorAll(s));
   const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   const svgNS='http://www.w3.org/2000/svg';
   function icon(name){const svg=document.createElementNS(svgNS,'svg'),use=document.createElementNS(svgNS,'use');svg.setAttribute('class','icon');svg.setAttribute('aria-hidden','true');use.setAttribute('href','#i-'+name);svg.append(use);return svg;}
