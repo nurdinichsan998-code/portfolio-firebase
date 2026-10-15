@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function owner() {
+      return request.auth != null && request.auth.uid == 'ndL0BJnPD4cQGma9IWTGIb7tPpo1';
+    }
+    match /profile/{filename} {
+      // Profile photos are public portfolio assets, not confidential files.
+      allow read: if true;
+      allow create, update: if owner()
+        && filename.matches('avatar-[a-zA-Z0-9-]+[.]webp')
+        && request.resource.size > 0 && request.resource.size < 1048576
+        && request.resource.contentType == 'image/webp';
+      allow delete: if owner();
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

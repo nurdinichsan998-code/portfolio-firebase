@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import postcss from 'postcss';
+import tailwindcss from 'tailwindcss';
+const index=await fs.readFile('index.html','utf8');
+const admin=await fs.readFile('admin.html','utf8');
+const runtime='<script src="https://cdn.tailwindcss.com/3.4.17"></script>';
+if(!index.includes(runtime))throw new Error('Tailwind runtime marker not found.');
+const result=await postcss([tailwindcss({content:[{raw:index,extension:'html'},{raw:admin,extension:'html'}],darkMode:'class',theme:{extend:{}},plugins:[]})]).process('@tailwind base;\n@tailwind components;\n@tailwind utilities;',{from:undefined});
+await fs.mkdir('dist',{recursive:true});
+await fs.writeFile('dist/index.html',index.replace(runtime,'<style>\n'+result.css+'\n</style>'));
+for(const file of ['admin.html','admin.js','public.js','cms.js','firebase-config.js'])await fs.copyFile(file,'dist/'+file);
+console.log('Built dist/: public portfolio + admin + shared Firebase modules. No Tailwind runtime CDN in production.');
